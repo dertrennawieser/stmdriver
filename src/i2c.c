@@ -10,7 +10,7 @@
 #include <stdbool.h>
 #include "stm32f4xx.h"
 
-#include "i2cf411.h"
+#include "i2c.h"
 #include "itm.h"
 
 
