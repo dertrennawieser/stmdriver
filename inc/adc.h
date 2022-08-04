@@ -8,7 +8,7 @@
 #ifndef ADC_H_
 #define ADC_H_
 
-#include "stm32f4xx.h"
+#include "stm32l0xx.h"
 
 #include "stdbool.h"
 

@@ -7,118 +7,120 @@
 
 #include "systeminit.h"
 
-extern uint32_t SystemCoreClock;
-extern uint32_t APB1Clock;
+
+uint32_t SystemCoreClock = 2097000;
+uint32_t APB1Clock = 2097000;
 
 volatile uint32_t systick_count = 0;
 /*
-// Change system clock to 100 MHz using external 25 MHz crystal
-// Called by Assembler startup code
+// Change system clock to internal 16 MHz R/C oscillator
 void SystemInit(void)
 {
-	// Because the debugger switches PLL on, we may need to switch
-	// back to the HSI oscillator before we can configure the PLL
+    // Enable HSI oscillator
+    SET_BIT(RCC->CR, RCC_CR_HSION);
 
-	// Enable HSI oscillator
-	SET_BIT(RCC->CR, RCC_CR_HSION);
+    // Wait until HSI oscillator is ready
+    while(!READ_BIT(RCC->CR, RCC_CR_HSIRDY));
 
-	// Wait until HSI oscillator is ready
-	while(!READ_BIT(RCC->CR, RCC_CR_HSIRDY));
+    // Switch to HSI oscillator
+    MODIFY_REG(RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_HSI);
 
-	// Switch to HSI oscillator
-	MODIFY_REG(RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_HSI);
+    // Wait until the switch is done
+    while ((RCC->CFGR & RCC_CFGR_SWS_Msk) != RCC_CFGR_SWS_HSI);
 
-	// Wait until the switch is done
-	while ((RCC->CFGR & RCC_CFGR_SWS_Msk) != RCC_CFGR_SWS_HSI);
+    // Flash latency 1 wait state
+    SET_BIT(FLASH->ACR, FLASH_ACR_LATENCY);
 
-	// Disable the PLL
-	CLEAR_BIT(RCC->CR, RCC_CR_PLLON);
+    // Update variables
+    SystemCoreClock=16000000;
+    APB1Clock = 16000000;
 
-	// Wait until PLL is fully stopped
-	while(READ_BIT(RCC->CR, RCC_CR_PLLRDY));
+    // Switch the MSI oscillator off
+    CLEAR_BIT(RCC->CR, RCC_CR_MSION);
 
-	// Voltage regulator scale 1
-	MODIFY_REG(PWR->CR, PWR_CR_VOS, PWR_CR_VOS_0 + PWR_CR_VOS_1);
-
-	// Flash latency 3 wait states
-	MODIFY_REG(FLASH->ACR, FLASH_ACR_LATENCY, FLASH_ACR_LATENCY_3WS);
-
-	// Enable HSE oscillator
-	SET_BIT(RCC->CR, RCC_CR_HSEON);
-
-	// Wait until HSE oscillator is ready
-	while(!READ_BIT(RCC->CR, RCC_CR_HSERDY));
-
-	// lowspeed I/O runs at 50 MHz
-	WRITE_REG(RCC->CFGR, RCC_CFGR_PPRE1_DIV2);
-
-	// 100 MHz using 25 MHz crystal with HSE/14 * 112/2
-	WRITE_REG(RCC->PLLCFGR, RCC_PLLCFGR_PLLSRC_HSE + RCC_PLLCFGR_PLLM_3 + RCC_PLLCFGR_PLLM_2 + RCC_PLLCFGR_PLLM_1 + RCC_PLLCFGR_PLLN_4 + RCC_PLLCFGR_PLLN_5 + RCC_PLLCFGR_PLLN_6);
-
-	// Enable PLL
-	SET_BIT(RCC->CR, RCC_CR_PLLON);
-
-	// Wait until PLL is ready
-	while(!READ_BIT(RCC->CR, RCC_CR_PLLRDY));
-
-	// Select PLL as clock source
-	MODIFY_REG(RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_PLL);
-
-	// Update variables
-	APB1Clock=50000000;
-	SystemCoreClock=100000000;
-
-	// Disable the HSI oscillator
-	CLEAR_BIT(RCC->CR, RCC_CR_HSION);
-
-	//FPU einschalten
-	SCB->CPACR = 0x00F00000;
-
-	//systick interrupt every ms
+    // systick interrupt every ms
 	SysTick_Config(SystemCoreClock/1000);
 }
 */
 
-// Change system clock to 100 MHz using internal 16 MHz R/C oscillator
+// Change system clock to 16 MHz using external 8 MHz Crystal
 // Called by Assembler startup code
-void SystemInit(void)
+void SystemInit()
 {
-	// Switch to HSI oscillator
-	MODIFY_REG(RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_HSI);
+    // Enable HSI oscillator
+    SET_BIT(RCC->CR, RCC_CR_HSION);
 
-	// Wait until the switch is done
-	while ((RCC->CFGR & RCC_CFGR_SWS_Msk) != RCC_CFGR_SWS_HSI);
+    // Wait until HSI oscillator is ready
+    while(!READ_BIT(RCC->CR, RCC_CR_HSIRDY));
 
-	// Disable the PLL, then we can configure it
-	CLEAR_BIT(RCC->CR, RCC_CR_PLLON);
+    // Switch to HSI oscillator
+    MODIFY_REG(RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_HSI);
 
-	// Flash latency 3 wait states
-	MODIFY_REG(FLASH->ACR, FLASH_ACR_LATENCY, FLASH_ACR_LATENCY_3WS);
+    // Wait until the switch is done
+    while ((RCC->CFGR & RCC_CFGR_SWS_Msk) != RCC_CFGR_SWS_HSI);
 
-	//lowspeed I/O runs at 50 MHz
-	WRITE_REG(RCC->CFGR, RCC_CFGR_PPRE1_DIV2);
+    // Disable the PLL
+    CLEAR_BIT(RCC->CR, RCC_CR_PLLON);
 
-	// 100 MHz using the 16 MHz HSI oscillator with HSI/8 * 100/2
-	WRITE_REG(RCC->PLLCFGR, RCC_PLLCFGR_PLLM_3 + RCC_PLLCFGR_PLLN_2 + RCC_PLLCFGR_PLLN_5 + RCC_PLLCFGR_PLLN_6);
+    // Wait until the PLL is fully stopped
+    while(READ_BIT(RCC->CR, RCC_CR_PLLRDY));
 
-	// Enable PLL
-	SET_BIT(RCC->CR, RCC_CR_PLLON);
+    // Flash latency 1 wait state
+    SET_BIT(FLASH->ACR, FLASH_ACR_LATENCY);
 
-	// Wait until PLL is ready
-	while(!READ_BIT(RCC->CR, RCC_CR_PLLRDY));
+    // Enable HSE oscillator
+    SET_BIT(RCC->CR, RCC_CR_HSEON);
 
-	// Select PLL as clock source
-	MODIFY_REG(RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_PLL);
+    // Wait until HSE oscillator is ready
+    while(!READ_BIT(RCC->CR, RCC_CR_HSERDY));
 
-	// Update variable
-	SystemCoreClock=100000000;
-	APB1Clock=50000000;
+    // 16 MHz using the 8 MHz HSE oscillator multiply by 4 divide by 2
+    WRITE_REG(RCC->CFGR, RCC_CFGR_PLLSRC_HSE + RCC_CFGR_PLLMUL4 + RCC_CFGR_PLLDIV2);
 
-	//FPU einschalten
-	SCB->CPACR = 0x00F00000;
+    // Enable PLL
+    SET_BIT(RCC->CR, RCC_CR_PLLON);
 
-	//systick interrupt every ms
+    // Wait until PLL is ready
+    while(!READ_BIT(RCC->CR, RCC_CR_PLLRDY));
+
+    // Select PLL as clock source
+    MODIFY_REG(RCC->CFGR, RCC_CFGR_SW, RCC_CFGR_SW_PLL);
+
+    // Switch the MSI oscillator off
+    CLEAR_BIT(RCC->CR, RCC_CR_MSION);
+
+    // Switch the HSI oscillator off
+    CLEAR_BIT(RCC->CR, RCC_CR_HSION);
+
+	// systick interrupt every ms
 	SysTick_Config(SystemCoreClock/1000);
+}
+
+void sleeponexit()
+{
+	// disable deepsleep mode
+	CLEAR_BIT(SCB->SCR, SCB_SCR_SLEEPDEEP_Msk);
+
+	// enable sleep on exit
+	SET_BIT(SCB->SCR, SCB_SCR_SLEEPONEXIT_Msk);
+}
+
+void stoponexit()
+{
+	// set v reg low power mode when cpu enters deepsleep
+	SET_BIT(PWR->CR, PWR_CR_LPSDSR);
+
+	// enter stop mode when cpu enters deepsleep
+	CLEAR_BIT(PWR->CR, PWR_CR_PDDS);
+
+	// clear wake up flag
+	SET_BIT(PWR->CR, PWR_CR_CWUF);
+
+	// enable deepsleep mode
+	SET_BIT(SCB->SCR, SCB_SCR_SLEEPDEEP_Msk);
+
+	// enable sleep on exit
+	SET_BIT(SCB->SCR, SCB_SCR_SLEEPONEXIT_Msk);
 }
 
 void wait_ms(uint32_t ticks) {

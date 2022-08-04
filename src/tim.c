@@ -7,7 +7,7 @@
 
 #include "tim.h"
 
-
+/*
 void tim3_pwminit(uint16_t psc, uint16_t arr)
 {
 	//enable Clock für Timer 3
@@ -72,7 +72,7 @@ void tim3_pwminit(uint16_t psc, uint16_t arr)
 	TIM3->CCR3 = 0;
 	TIM3->CCR4 = 0;
 
-	/*
+
 	//enable compare interrupt
 	SET_BIT(TIM3->DIER, TIM_DIER_CC1IE);
 	SET_BIT(TIM3->DIER, TIM_DIER_CC2IE);
@@ -81,7 +81,7 @@ void tim3_pwminit(uint16_t psc, uint16_t arr)
 
 	//enable update interrupt
 	//SET_BIT(TIM3->DIER, TIM_DIER_UIE);
-	*/
+
 
 	//enable prescaler
 	TIM3->PSC = psc-1;
@@ -91,35 +91,41 @@ void tim3_pwminit(uint16_t psc, uint16_t arr)
 	//Timer enable auto-preload
 	SET_BIT(TIM3->CR1, TIM_CR1_ARPE);
 }
-
-void tim2_init(uint16_t psc)
+*/
+void tim6_init(uint16_t psc, uint16_t arr)
 {
-	//TIM2 & TIM4 clock enable
-	SET_BIT(RCC->APB1ENR, RCC_APB1ENR_TIM2EN);
+	//TIM6 clock enable
+	SET_BIT(RCC->APB1ENR, RCC_APB1ENR_TIM6EN);
+
+	// auto reload register - max counter value
+	TIM6->ARR = arr;
 
 	//Precsaler for 100MHz -> 1MHz (/100)
-	TIM2->PSC = psc-1;
+	TIM6->PSC = psc-1;
 
 	//generate update event -> load prescaler
-	SET_BIT(TIM2->EGR, TIM_EGR_UG);
+	SET_BIT(TIM6->EGR, TIM_EGR_UG);
 
 	//enable update interrupt
-	//SET_BIT(TIM2->DIER, TIM_DIER_UIE);
+	SET_BIT(TIM6->DIER, TIM_DIER_UIE);
 }
 
-void tim4_init(uint16_t psc)
+void tim7_init(uint16_t psc, uint16_t arr)
 {
-	//TIM2 & TIM4 clock enable
-	SET_BIT(RCC->APB1ENR, RCC_APB1ENR_TIM4EN);
+	//TIM7 clock enable
+	SET_BIT(RCC->APB1ENR, RCC_APB1ENR_TIM7EN);
+
+	// auto reload register - max counter value
+	TIM7->ARR = arr;
 
 	//Precsaler for 100MHz -> 1MHz (/100)
-	TIM4->PSC = psc-1;
+	TIM7->PSC = psc-1;
 
 	//generate update event -> load prescaler
-	SET_BIT(TIM4->EGR, TIM_EGR_UG);
+	SET_BIT(TIM7->EGR, TIM_EGR_UG);
 
 	//enable update interrupt
-	//SET_BIT(TIM4->DIER, TIM_DIER_UIE);
+	SET_BIT(TIM7->DIER, TIM_DIER_UIE);
 }
 
 /*

@@ -11,6 +11,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "stm32l0xx.h"
+
 
 #ifndef I2C_BUFFER_SIZE
 #define I2C_BUFFER_SIZE 256		//n. of reserved Bytes for receive buffer

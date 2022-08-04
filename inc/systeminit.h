@@ -8,7 +8,13 @@
 #ifndef SYSTEMINIT_H_
 #define SYSTEMINIT_H_
 
-#include "stm32f4xx.h"
+#include "stm32l0xx.h"
+
+
+void SystemInit();
+
+void sleeponexit();
+void stoponexit();
 
 void wait_ms(uint32_t);
 uint64_t Systick_GetTick();

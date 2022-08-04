@@ -4,9 +4,9 @@
  *  Created on: 17.08.2020
  *      Author: Moritz
  */
-
+/*
 #include <stdint.h>
-#include "stm32f4xx.h"
+#include "stm32l0xx.h"
 
 #include "itm.h"
 
@@ -56,3 +56,4 @@ void ITM_SendInt(int32_t o)
 	ITM_itoa(o, arr);
 	ITM_SendString(arr);
 }
+*/
