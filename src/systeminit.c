@@ -91,9 +91,6 @@ void SystemInit()
 
     // Switch the HSI oscillator off
     CLEAR_BIT(RCC->CR, RCC_CR_HSION);
-
-	// systick interrupt every ms
-	SysTick_Config(SystemCoreClock/1000);
 }
 
 void sleeponexit()
