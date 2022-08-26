@@ -125,11 +125,53 @@ void wait_ms(uint32_t ticks) {
 	while (systick_count < end);
 }
 
-uint64_t Systick_GetTick() {
+uint64_t systick_gettick() {
 	return systick_count;
 }
 
 void SysTick_Handler(void)
 {
     systick_count++;
+}
+
+void iwdg_init()
+{
+	// disable iwdg in debug mode
+	SET_BIT(DBGMCU->APB1FZ, DBGMCU_APB1_FZ_DBG_IWDG_STOP);
+
+	// enable iwdg
+	IWDG->KR = 0x0000CCCC;
+
+	// enable register write access
+	IWDG->KR = 0x00005555;
+
+	// set prescaler
+	IWDG->PR = 0;
+
+	// set reload value
+	IWDG->RLR = 600;
+
+	// wait for the registers to be updated
+	uint32_t start = systick_gettick();
+	while(IWDG->SR)
+	{
+		if((systick_gettick() - start) > TIMEOUT_MS)
+			fault_handler();
+	}
+
+	// set window and refresh iwdg
+	IWDG->KR = 0x0000AAAA;
+}
+
+void iwdg_refresh()
+{
+	IWDG->KR = 0x0000AAAA;
+}
+
+void fault_handler()
+{
+	SET_BIT(GPIOA->BSRR, GPIO_BSRR_BR_0);
+	SET_BIT(GPIOA->BSRR, GPIO_BSRR_BR_1);
+	SET_BIT(GPIOB->BSRR, GPIO_BSRR_BS_2);
+	while(1);
 }
