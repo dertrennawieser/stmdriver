@@ -92,10 +92,13 @@ void tim3_pwminit(uint16_t psc, uint16_t arr)
 	SET_BIT(TIM3->CR1, TIM_CR1_ARPE);
 }
 
-void tim2_init(uint16_t psc)
+void tim2_init(uint16_t psc, uint16_t arr)
 {
 	//TIM2 & TIM4 clock enable
 	SET_BIT(RCC->APB1ENR, RCC_APB1ENR_TIM2EN);
+
+	//auto reload register (max value)
+	TIM2->ARR = arr;
 
 	//Precsaler for 100MHz -> 1MHz (/100)
 	TIM2->PSC = psc-1;
@@ -107,10 +110,13 @@ void tim2_init(uint16_t psc)
 	//SET_BIT(TIM2->DIER, TIM_DIER_UIE);
 }
 
-void tim4_init(uint16_t psc)
+void tim4_init(uint16_t psc, uint16_t arr)
 {
 	//TIM2 & TIM4 clock enable
 	SET_BIT(RCC->APB1ENR, RCC_APB1ENR_TIM4EN);
+
+	//auto reload register (max value)
+	TIM4->ARR = arr;
 
 	//Precsaler for 100MHz -> 1MHz (/100)
 	TIM4->PSC = psc-1;

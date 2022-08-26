@@ -10,7 +10,19 @@
 
 #include "stm32f4xx.h"
 
+#define TIMEOUT_MS 1000
+
+void SystemInit(void);
+
+void sleeponexit();
+void stoponexit();
+
 void wait_ms(uint32_t);
-uint64_t Systick_GetTick();
+uint64_t systick_gettick();
+
+void iwdg_init();
+void iwdg_refresh();
+
+void fault_handler();
 
 #endif /* SYSTEMINIT_H_ */

@@ -12,7 +12,7 @@
 
 void tim3_pwminit(uint16_t psc, uint16_t arr);
 
-void tim2_init(uint16_t psc);
-void tim4_init(uint16_t psc);
+void tim2_init(uint16_t psc, uint16_t arr);
+void tim4_init(uint16_t psc, uint16_t arr);
 
 #endif /* TIM_H_ */

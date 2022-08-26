@@ -6,16 +6,13 @@
  */
 
 
-#include <stdint.h>
-#include <stdbool.h>
-#include "stm32f4xx.h"
-
 #include "i2c.h"
 #include "itm.h"
 
 
 typedef struct
 {
+	volatile I2C_TypeDef* reg_ptr;
 	volatile uint8_t saddr;
 	volatile uint8_t rxbuffer[I2C_BUFFER_SIZE];
 	volatile uint8_t i;
@@ -27,12 +24,14 @@ typedef struct
 }i2c_s;
 
 
-i2c_s i2c1, i2c2, i2c3;
-i2c_s* i2c_ptr;
+i2c_s i2c1 = { I2C1 };
+i2c_s i2c2 = { I2C2 };
+i2c_s i2c3 = { I2C3 };
 
 
-static void I2C_Interrupt(I2C_TypeDef* reg_ptr)
+static void I2C_Interrupt(i2c_s* i2c_ptr)
 {
+	volatile I2C_TypeDef* reg_ptr = i2c_ptr->reg_ptr;
 	if(READ_BIT(reg_ptr->SR1, I2C_SR1_SB))
 	{
 		SET_BIT(reg_ptr->CR1, I2C_CR1_ACK);
@@ -125,20 +124,17 @@ static void I2C_error(I2C_TypeDef* reg_ptr)
 
 void I2C1_EV_IRQHandler()
 {
-	i2c_ptr = &i2c1;
-	I2C_Interrupt(I2C1);
+	I2C_Interrupt(&i2c1);
 }
 
 void I2C2_EV_IRQHandler()
 {
-	i2c_ptr = &i2c2;
-	I2C_Interrupt(I2C2);
+	I2C_Interrupt(&i2c2);
 }
 
 void I2C3_EV_IRQHandler()
 {
-	i2c_ptr = &i2c3;
-	I2C_Interrupt(I2C3);
+	I2C_Interrupt(&i2c3);
 }
 
 void I2C1_ER_IRQHandler()
@@ -286,6 +282,8 @@ void i2c_start(I2C_TypeDef* reg_ptr, uint8_t addr, uint8_t* send_buffer, int sen
 		return;
 
 	__disable_irq();
+
+	i2c_s* i2c_ptr;
 
 	if (reg_ptr==I2C1)
 		i2c_ptr = &i2c1;
