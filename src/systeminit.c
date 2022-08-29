@@ -7,8 +7,8 @@
 
 #include "systeminit.h"
 
-uint32_t SystemCoreClock=16000000;
-uint32_t APB1Clock=16000000;
+uint32_t SystemCoreClock=8000000;
+uint32_t APB1Clock=8000000;
 
 volatile uint32_t systick_count = 0;
 /*
@@ -79,7 +79,7 @@ void SystemInit(void)
 }
 */
 
-// Change system clock to 100 MHz using internal 16 MHz R/C oscillator
+// Change system clock to 72 MHz using internal 8 MHz R/C oscillator
 // Called by Assembler startup code
 void SystemInit(void)
 {
@@ -92,14 +92,11 @@ void SystemInit(void)
 	// Disable the PLL, then we can configure it
 	CLEAR_BIT(RCC->CR, RCC_CR_PLLON);
 
-	// Flash latency 3 wait states
-	MODIFY_REG(FLASH->ACR, FLASH_ACR_LATENCY, FLASH_ACR_LATENCY_3WS);
+	// Flash latency 2 wait states
+	MODIFY_REG(FLASH->ACR, FLASH_ACR_LATENCY, FLASH_ACR_LATENCY_1);
 
-	//lowspeed I/O runs at 50 MHz
-	WRITE_REG(RCC->CFGR, RCC_CFGR_PPRE1_DIV2);
-
-	// 100 MHz using the 16 MHz HSI oscillator with HSI/8 * 100/2
-	WRITE_REG(RCC->PLLCFGR, RCC_PLLCFGR_PLLM_3 + RCC_PLLCFGR_PLLN_2 + RCC_PLLCFGR_PLLN_5 + RCC_PLLCFGR_PLLN_6);
+	// 72 MHz using the 8 MHz HSI oscillator with 9x PLL, lowspeed I/O runs at 36 MHz
+	WRITE_REG(RCC->CFGR, RCC_CFGR_PLLSRC_HSI_PREDIV + RCC_CFGR_PLLMUL9 + RCC_CFGR_PPRE1_DIV2);
 
 	// Enable PLL
 	SET_BIT(RCC->CR, RCC_CR_PLLON);

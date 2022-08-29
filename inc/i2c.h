@@ -11,7 +11,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "stm32f4xx.h"
+#include "stm32f3xx.h"
 
 
 #ifndef I2C_BUFFER_SIZE

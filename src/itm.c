@@ -6,7 +6,7 @@
  */
 
 #include <stdint.h>
-#include "stm32f4xx.h"
+#include "stm32f3xx.h"
 
 #include "itm.h"
 

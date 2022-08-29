@@ -8,7 +8,7 @@
 #ifndef SYSTEMINIT_H_
 #define SYSTEMINIT_H_
 
-#include "stm32f4xx.h"
+#include "stm32f3xx.h"
 
 #define TIMEOUT_MS 1000
 
