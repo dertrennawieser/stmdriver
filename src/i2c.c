@@ -192,7 +192,7 @@ bool i2c_busy(I2C_TypeDef* reg_ptr)
  * Parameter 2: true -> 400kHz	false -> 100kHz
  * Parameter 3: APB1 clock
  */
-void i2c_init(I2C_TypeDef* reg_ptr, bool fastMode, uint32_t apb1_clock)
+void i2c_init(I2C_TypeDef* reg_ptr, bool fastMode, uint32_t i2cclk)
 {
 	if (reg_ptr==I2C1)
 	{
@@ -264,11 +264,11 @@ void i2c_init(I2C_TypeDef* reg_ptr, bool fastMode, uint32_t apb1_clock)
 	if (fastMode)
 	{
 		// i2c clock must be <= 32 MHz otherwise the SCLDEL value would not fit into the register
-		uint32_t prescaler=apb1_clock/8000000;
+		uint32_t prescaler=i2cclk/8000000;
 		if (prescaler<1)
 			prescaler=1;
 
-		uint32_t i2c_clock=apb1_clock/prescaler;
+		uint32_t i2c_clock=i2cclk/prescaler;
 		MODIFY_REG(reg_ptr->TIMINGR, I2C_TIMINGR_PRESC,  (prescaler-1)         << I2C_TIMINGR_PRESC_Pos);
 		MODIFY_REG(reg_ptr->TIMINGR, I2C_TIMINGR_SCLL,   (i2c_clock/800000-1)  << I2C_TIMINGR_SCLL_Pos);
 		MODIFY_REG(reg_ptr->TIMINGR, I2C_TIMINGR_SCLH,   (i2c_clock/2000000-1) << I2C_TIMINGR_SCLH_Pos);
@@ -278,11 +278,11 @@ void i2c_init(I2C_TypeDef* reg_ptr, bool fastMode, uint32_t apb1_clock)
 	else
 	{
 		// i2c clock must be <= 12.8 MHz otherwise the SCLDEL value would not fit into the register
-		uint32_t prescaler=apb1_clock/4000000;
+		uint32_t prescaler=i2cclk/4000000;
 		if (prescaler<1)
 			prescaler=1;
 
-		uint32_t i2c_clock=apb1_clock/prescaler;
+		uint32_t i2c_clock=i2cclk/prescaler;
 		MODIFY_REG(reg_ptr->TIMINGR, I2C_TIMINGR_PRESC,  (prescaler-1)         << I2C_TIMINGR_PRESC_Pos);
 		MODIFY_REG(reg_ptr->TIMINGR, I2C_TIMINGR_SCLL,   (i2c_clock/20000-1)  << I2C_TIMINGR_SCLL_Pos);
 		MODIFY_REG(reg_ptr->TIMINGR, I2C_TIMINGR_SCLH,   (i2c_clock/20408-1)  << I2C_TIMINGR_SCLH_Pos);

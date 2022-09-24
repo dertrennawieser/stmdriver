@@ -124,7 +124,7 @@ void tim7_init(uint16_t psc, uint16_t arr)
 	SET_BIT(TIM7->EGR, TIM_EGR_UG);
 
 	//enable update interrupt
-	//SET_BIT(TIM7->DIER, TIM_DIER_UIE);
+	SET_BIT(TIM7->DIER, TIM_DIER_UIE);
 }
 
 /*

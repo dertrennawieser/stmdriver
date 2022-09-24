@@ -167,7 +167,7 @@ void iwdg_init()
 	IWDG->PR = 0;
 
 	// set reload value
-	IWDG->RLR = 600;
+	IWDG->RLR = 30;
 
 	// wait for the registers to be updated
 	uint32_t start = systick_gettick();
